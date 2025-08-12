@@ -24,14 +24,9 @@
 #define GRAY4 L'█' // 0x2588
 
 #define FONT_ASPECT 0.5
-#define FONT_SIZE 12.
-#define STANDART_DPI 96.
 
-const int FONT_Y = STANDART_DPI * FONT_SIZE / 72.;
-const int FONT_X = FONT_Y / 2;
-
-const int WIDTH = 16 * 8;
-const int HEIGHT = 9 * 5;
+const int WIDTH = 16 * 16;
+const int HEIGHT = 9 * 10;
 
 const int GRAYSCALE_SIZE = 18;
 const wchar_t GRAYSCALE[GRAYSCALE_SIZE + 1] = L" ·:!/r(l1Z4H9W8$@\x2592";

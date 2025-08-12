@@ -22,19 +22,46 @@
 using pixel = wchar_t;
 using Matrix = Nmatrix<pixel>;
 
+struct Rect {
+  int x, y;
+  int size_x, size_y;
+
+  Matrix pixels;
+
+  Rect(int x_pos, int y_pos, int size_x, int size_y, bool add_frame = false)
+      : x(x_pos), y(y_pos), size_x(size_x), size_y(size_y) {
+    pixels = Matrix(size_y, size_x, GRAY1);
+    if (add_frame)
+      if (size_x > 1 && size_y > 1)
+        create_frame();
+  }
+
+  void create_frame() {
+    for (int j = 0; j < size_x; j++) {
+      pixels[0][j] = HORIZONTAL;
+      pixels[size_y - 1][j] = HORIZONTAL;
+    }
+    for (int i = 0; i < size_y; i++) {
+      pixels[i][0] = VERTICAL;
+      pixels[i][size_x - 1] = VERTICAL;
+    }
+    pixels[0][0] = ANGLE_L_T;
+    pixels[0][size_x - 1] = ANGLE_R_T;
+    pixels[size_y - 1][0] = ANGLE_L_B;
+    pixels[size_y - 1][size_x - 1] = ANGLE_R_B;
+  }
+};
+
 struct Screen {
   int n_rows, n_cols;
-  int center_x, center_y;
+  double aspect;
+  double font_aspect;
 
-  int pix_x, pix_y;
   Matrix pixels;
 
   Screen(int r = 9 * 5, int c = 16 * 8)
-      : n_rows(r), n_cols(c), center_x(c / 2), center_y(r / 2),
-        pix_x(n_rows * FONT_Y), pix_y(n_cols * FONT_X) {
+      : n_rows(r), n_cols(c), aspect(double(c) / r), font_aspect(FONT_ASPECT) {
     pixels = Matrix(r, c, GRAY0);
-    // printf("cols = %i, rows = %i\n", pixels.ncols(), pixels.nrows());
-
     SCREEN_HIDE_CURSOR();
     redraw();
   }
@@ -72,19 +99,10 @@ struct Screen {
   }
 
   void draw_frame() {
-    for (int j = 0; j < n_cols; j++) {
-      pixels[0][j] = HORIZONTAL;
-      pixels[n_rows - 1][j] = HORIZONTAL;
-    }
-    for (int i = 0; i < n_rows; i++) {
-      pixels[i][0] = VERTICAL;
-      pixels[i][n_cols - 1] = VERTICAL;
-    }
-    pixels[0][0] = ANGLE_L_T;
-    pixels[0][n_cols - 1] = ANGLE_R_T;
-    pixels[n_rows - 1][0] = ANGLE_L_B;
-    pixels[n_rows - 1][n_cols - 1] = ANGLE_R_B;
-
+    Rect r(0, 0, WIDTH, HEIGHT);
+    r.pixels = pixels;
+    r.create_frame();
+    draw_rect(r);
     draw_ui();
   }
 
@@ -92,6 +110,18 @@ struct Screen {
     draw_frame();
     wprintf(L"%ls", pixels[0]);
     SCREEN_GOTO_TOPLEFT();
+  }
+
+  void draw_rect(Rect &r) {
+    if (r.x < 0 || r.y < 0 || r.x + r.size_x > n_cols ||
+        r.y + r.size_y > n_rows)
+      return;
+
+    for (size_t i = 0; i < r.size_y; i++) {
+      for (size_t j = 0; j < r.size_x; j++) {
+        pixels[r.y + i][r.x + j] = r.pixels[i][j];
+      }
+    }
   }
 };
 
@@ -116,6 +146,8 @@ int main(int argc, char *argv[]) {
   pixel p = GRAY0;
   double aspect = (double)WIDTH / HEIGHT;
   double pixel_aspect = 0.5;
+
+  Rect r(5, HEIGHT - 6, 2, 2, true);
   while (1) {
     t++;
     for (int i = 1; i < HEIGHT - 1; i++) {
@@ -123,7 +155,7 @@ int main(int argc, char *argv[]) {
         float x = double(j) / (WIDTH - 1) * 2 - 1;
         float y = double(i) / (HEIGHT - 1) * 2 - 1;
         x *= aspect * pixel_aspect;
-        // x += sin(t * 1e-3);
+        x += sin(t * 1e-3);
 
         double dist = std::sqrt(SQR(x) + SQR(y));
         int color = int(1. / dist);
@@ -134,6 +166,8 @@ int main(int argc, char *argv[]) {
       }
     }
     // screen.draw_frame();
+
+    screen.draw_rect(r);
 
     screen.redraw();
     nanosleep((const struct timespec[]){{0, (int)(1.0 / FPS * 5e7)}}, NULL);
