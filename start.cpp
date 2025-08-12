@@ -12,7 +12,7 @@ void run() {
   s += PROG_NAME;
   puts(s.c_str());
 
-  system(s.c_str());
+  int x = system(s.c_str());
 }
 
 int main(int argc, char *argv[]) {

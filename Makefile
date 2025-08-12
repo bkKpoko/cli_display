@@ -1,6 +1,6 @@
 CXX = g++
 
-CXXFLAGS = -O3 -std=c++14 
+CXXFLAGS = -O3 -std=c++17
 LDFLAGS  = 
 LIBS     = 
 TARGET = main
