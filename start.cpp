@@ -16,6 +16,7 @@ void run() {
   file >> HEIGHT;
   file.ignore();
   std::getline(file, PROG_NAME);
+  file.close();
 
   std::string s = "gnome-terminal ";
   s += "--geometry=";

@@ -9,7 +9,7 @@
 
 #define SQR(a) (a) * (a)
 
-using pixel = wchar_t;
+using pixel = cchar_t;
 using Matrix = Nmatrix<pixel>;
 
 WINDOW *wnd;
@@ -21,20 +21,22 @@ struct Screen {
   Matrix pixels;
 
   Screen(WINDOW *win) : wnd_ptr(win) {
-    pixels = Matrix(LINES, COLS, GRAY0);
+    cchar_t tmp;
+    wchar_t wtmp = GRAY1;
+    setcchar(&tmp, &wtmp, WA_NORMAL, 0, NULL);
+
+    pixels = Matrix(LINES, COLS, tmp);
     redraw();
   }
 
   void redraw() {
-    cchar_t pix;
     CURSOR_TO_START();
-
     wborder_set(wnd_ptr, &vert, &vert, &hor, &hor, &top_left, &top_right,
                 &bot_left, &bot_right);
+
     for (size_t i = 1; i < LINES - 1; i++) {
       for (size_t j = 1; j < COLS - 1; j++) {
-        setcchar(&pix, &pixels[i][j], WA_NORMAL, 0, NULL);
-        mvwadd_wch(wnd_ptr, i, j, &pix);
+        mvwadd_wch(wnd_ptr, i, j, &pixels[i][j]);
       }
     }
     CURSOR_TO_START();
@@ -74,7 +76,7 @@ int init() {
   }
   start_color();
 
-  init_pair(1, COLOR_BLACK, COLOR_WHITE);
+  init_pair(1, COLOR_BLACK, COLOR_BLUE);
   wbkgd(wnd, COLOR_PAIR(0));
 
   attron(A_BOLD);
@@ -88,9 +90,9 @@ void run() {
   Screen screen(wnd);
   int t = 0;
   double aspect = (double)(COLS - 1) / (LINES - 1);
-  double pixel_aspect = 0.5;
+  double pixel_aspect = 0.56;
 
-  pixel p = GRAY0;
+  pixel p = hor;
   while (1) {
     t++;
     for (int i = 1; i < LINES - 1; i++) {
@@ -102,10 +104,10 @@ void run() {
 
         double dist = std::sqrt(SQR(x) + SQR(y));
         int color = int(1. / dist);
-        color = std::clamp(color, 0, GRAYSCALE_SIZE - 1);
+        // color = std::clamp(color, 0, GRAYSCALE_SIZE - 1);
 
-        p = GRAYSCALE[color];
-        screen.pixels[i][j] = p;
+        // p = GRAYSCALE[color];
+        screen.pixels[i][j].ext_color = color;
       }
     }
     screen.redraw();
