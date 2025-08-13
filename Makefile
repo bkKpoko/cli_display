@@ -1,19 +1,44 @@
+# Compiler flags
 CXX = g++
+CXXFLAGS = -Wall -Wextra -std=c++17 -O2
 
-CXXFLAGS = -O3 -std=c++17
-LDFLAGS  = 
-LIBS     = 
+# Directories
+SRC_DIR = src
+INC_DIR = include
+BUILD_DIR = build
+
+# Binary file
 TARGET = main
 
-SRCS = game.cpp 
-OBJS = $(SRCS:.cpp=.o)
+# Sources
+SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
-all: $(TARGET)
+# Headers
+INCLUDES = -I$(INC_DIR)
 
-$(TARGET): $(OBJS)
-		$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
+# Main rule
+all: $(BUILD_DIR) $(TARGET)
 
+# Build dir
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+# Build target
+$(TARGET): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+# .cpp to .o
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+# clean
 clean:
-		-rm -rf $(OBJS) $(TARGET)
+	rm -rf $(BUILD_DIR) $(TARGET)
 
-.PHONY: all clean
+rebuild: clean all
+
+run: $(TARGET)
+	./$(TARGET)
+
+.PHONY: all clean rebuild run
