@@ -16,6 +16,8 @@ OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
 # Headers
 INCLUDES = -I$(INC_DIR)
+LIBS = -lncursesw -lpanelw
+
 
 # Main rule
 all: $(BUILD_DIR) $(TARGET)
@@ -26,11 +28,11 @@ $(BUILD_DIR):
 
 # Build target
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) $(LIBS) -o $@ $^
 
 # .cpp to .o
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(LIBS) -c $< -o $@
 
 # clean
 clean:

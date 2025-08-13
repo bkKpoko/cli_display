@@ -1,13 +1,25 @@
 #include <cstdio>
 #include <cstdlib> // For system()
+#include <fstream>
+#include <iostream>
+#include <stdexcept>
 #include <string>
 
-#include "params.h"
-
 void run() {
+  int WIDTH, HEIGHT;
+  std::string PROG_NAME;
+  std::ifstream file("parameters/parameters");
+  if (!file.is_open()) {
+    throw std::runtime_error("No file with params\n");
+  }
+  file >> WIDTH;
+  file >> HEIGHT;
+  file.ignore();
+  std::getline(file, PROG_NAME);
+
   std::string s = "gnome-terminal ";
   s += "--geometry=";
-  s += std::to_string(WIDTH) + "x" + std::to_string(HEIGHT + 1);
+  s += std::to_string(WIDTH) + "x" + std::to_string(HEIGHT);
   s += " -- ";
   s += PROG_NAME;
   puts(s.c_str());
