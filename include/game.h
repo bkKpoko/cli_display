@@ -34,7 +34,7 @@ const int GRAYSCALE_SIZE = std::size(GRAYSCALE) - 2;
 const int viewport_size = 1;
 const int proj_plane_z = 1;
 const double aspect = (double)(COLS - 1) / (LINES - 1);
-const double font_aspect = 0.56;
+const double font_aspect = 0.6;
 
 using pixel = cchar_t;
 using Matrix = Nmatrix<pixel>;
@@ -59,21 +59,28 @@ struct point {
   int x, y;
   double h;
 
+  point();
   point(int x, int y, double h = 1.0);
   point(vertex3d v);
 };
+
+typedef struct {
+  size_t v[3];
+} triangle;
 
 struct screen {
 public:
   static screen &Instance(WINDOW *win);
 
   void redraw();
+  void create_tr(triangle tr, Nvector<point> points);
   void create_line(point p0, point p1, pixel color = GRAY[GRAYSCALE_SIZE - 1]);
   void create_wf_tr(point p0, point p1, point p2,
                     pixel color = GRAY[GRAYSCALE_SIZE - 1]);
   void create_filled_tr(point p0, point p1, point p2,
                         pixel color = GRAY[GRAYSCALE_SIZE - 1]);
   void create_shaded_tr(point p0, point p1, point p2);
+  void create_object(Nvector<vertex3d> v, Nvector<triangle> tr);
 
 private:
   WINDOW *wnd_p;

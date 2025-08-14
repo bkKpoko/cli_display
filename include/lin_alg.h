@@ -147,18 +147,16 @@ template <class T> Nvector<T> &Nvector<T>::operator=(const Nvector<T> &rhs) {
 
 template <class T> inline T &Nvector<T>::operator[](const int i) {
 #ifdef _CHECKBOUNDS_
-  if (i >= nn || i < 0) {
+  if (i >= nn || i < 0)
     throw std::runtime_error("index out of bounds");
-  }
 #endif // _CHECKBOUNDS_
   return v[i];
 }
 
 template <class T> inline const T &Nvector<T>::operator[](const int i) const {
 #ifdef _CHECKBOUNDS_
-  if (i >= nn || i < 0) {
+  if (i >= nn || i < 0)
     throw std::runtime_error("index out of bounds");
-  }
 #endif // _CHECKBOUNDS_
   return v[i];
 }
@@ -187,9 +185,8 @@ template <class T> void Nvector<T>::assign(int newn, const T &a) {
 
 template <class T> void Nvector<T>::pop_back() {
 #ifdef _CHECKBOUNDS_
-  if (i >= nn || i < 0) {
+  if (i >= nn || i < 0)
     throw std::runtime_error("index out of bounds");
-  }
 #endif // _CHECKBOUNDS_
   nn--;
 }

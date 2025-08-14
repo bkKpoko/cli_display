@@ -1,4 +1,5 @@
 #include "game.h"
+#include "lin_alg.h"
 #include <ncurses.h>
 
 // =========================================
@@ -36,12 +37,6 @@ void screen::init() {
 
 screen::~screen() {}
 
-void screen::create_wf_tr(point p0, point p1, point p2, pixel color) {
-  create_line(p0, p1, color);
-  create_line(p1, p2, color);
-  create_line(p2, p0, color);
-}
-
 void screen::redraw() {
   CURSOR_TO_START();
   for (size_t i = 1; i < LINES - 1; i++) {
@@ -51,6 +46,12 @@ void screen::redraw() {
   }
   CURSOR_TO_START();
   refresh();
+}
+
+void screen::create_wf_tr(point p0, point p1, point p2, pixel color) {
+  create_line(p0, p1, color);
+  create_line(p1, p2, color);
+  create_line(p2, p0, color);
 }
 
 void screen::create_line(point p0, point p1, pixel color) {
@@ -162,6 +163,20 @@ void screen::create_shaded_tr(point p0, point p1, point p2) {
     }
   }
 }
+
+void screen::create_tr(triangle tr, Nvector<point> points) {
+  create_wf_tr(points[tr.v[0]], points[tr.v[1]], points[tr.v[2]]);
+}
+
+void screen::create_object(Nvector<vertex3d> v, Nvector<triangle> tr) {
+  Nvector<point> projected(v.size());
+  for (size_t i = 0; i < v.size(); i++)
+    projected[i] = point(v[i]);
+
+  for (size_t i = 0; i < tr.size(); i++)
+    create_tr(tr[i], projected);
+}
+
 // =========================================
 // struct screen end
 // =========================================
@@ -169,6 +184,9 @@ void screen::create_shaded_tr(point p0, point p1, point p2) {
 // =========================================
 // struct point begin
 // =========================================
+
+point::point() : x(0), y(0), h(0) {}
+
 point::point(int x, int y, double h) : x(x), y(y), h(h) {}
 
 point::point(vertex3d v) {

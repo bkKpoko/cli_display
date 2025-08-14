@@ -4,10 +4,23 @@
 #include <cstdio>
 #include <ctime>
 #include <fstream>
+#include <iterator>
 #include <ncurses.h>
 #include <vector>
 
 WINDOW *wnd;
+
+const double l = 1.;
+
+Nvector<vertex3d> vertices = {
+    vertex3d{l, l, l + 7},    vertex3d{-l, l, l + 7}, vertex3d{-l, -l, l + 7},
+    vertex3d{l, -l, l + 7},   vertex3d{l, l, -l + 7}, vertex3d{-l, l, -l + 7},
+    vertex3d{-l, -l, -l + 7}, vertex3d{l, -l, -l + 7}};
+
+const Nvector<triangle> trises = {
+    triangle{0, 1, 2}, triangle{0, 2, 3}, triangle{4, 0, 3}, triangle{4, 3, 7},
+    triangle{5, 4, 7}, triangle{5, 7, 6}, triangle{1, 5, 6}, triangle{1, 6, 2},
+    triangle{4, 5, 1}, triangle{4, 1, 0}, triangle{2, 6, 7}, triangle{2, 7, 3}};
 
 int init();
 void run();
@@ -51,43 +64,11 @@ void run() {
   screen &screen = screen::Instance(wnd);
   int t = 0;
 
-  wchar_t f_c = '#';
-  pixel f_p;
-  setcchar(&f_p, &f_c, WA_NORMAL, 0, NULL);
-
-  wchar_t b_c = '/';
-  pixel b_p;
-  setcchar(&b_p, &b_c, WA_NORMAL, 0, NULL);
-
-  wchar_t c_c = '.';
-  pixel c_p;
-  setcchar(&c_p, &c_c, WA_NORMAL, 0, NULL);
-
-  const vertex3d vA{-2, -0.5, 5};
-  const vertex3d vB{-2, 0.5, 5};
-  const vertex3d vC{-1, 0.5, 5};
-  const vertex3d vD{-1, -0.5, 5};
-
-  const vertex3d vAb{-2, -0.5, 7};
-  const vertex3d vBb{-2, 0.5, 7};
-  const vertex3d vCb{-1, 0.5, 7};
-  const vertex3d vDb{-1, -0.5, 7};
-
-  screen.create_line(point(vAb), point(vBb), b_p);
-  screen.create_line(point(vBb), point(vCb), b_p);
-  screen.create_line(point(vCb), point(vDb), b_p);
-  screen.create_line(point(vDb), point(vAb), b_p);
-
-  screen.create_line(point(vA), point(vAb), c_p);
-  screen.create_line(point(vB), point(vBb), c_p);
-  screen.create_line(point(vC), point(vCb), c_p);
-  screen.create_line(point(vD), point(vDb), c_p);
-
-  screen.create_line(point(vA), point(vB));
-  screen.create_line(point(vB), point(vC));
-  screen.create_line(point(vC), point(vD));
-  screen.create_line(point(vD), point(vA));
-
+  for (size_t i = 0; i < vertices.size(); i++) {
+    vertices[i].x -= 1.5;
+    // vertices[i].z += 7;
+  }
+  screen.create_object(vertices, trises);
   while (1) {
     t++;
     for (int i = 1; i < LINES - 1; i++) {
