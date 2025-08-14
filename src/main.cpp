@@ -12,10 +12,10 @@ WINDOW *wnd;
 
 const double l = 1.;
 
-Nvector<vertex3d> vertices = {
-    vertex3d{l, l, l + 7},    vertex3d{-l, l, l + 7}, vertex3d{-l, -l, l + 7},
-    vertex3d{l, -l, l + 7},   vertex3d{l, l, -l + 7}, vertex3d{-l, l, -l + 7},
-    vertex3d{-l, -l, -l + 7}, vertex3d{l, -l, -l + 7}};
+Nvector<vertex3d> vertices = {vertex3d{l, l, l},    vertex3d{-l, l, l},
+                              vertex3d{-l, -l, l},  vertex3d{l, -l, l},
+                              vertex3d{l, l, -l},   vertex3d{-l, l, -l},
+                              vertex3d{-l, -l, -l}, vertex3d{l, -l, -l}};
 
 const Nvector<triangle> trises = {
     triangle{0, 1, 2}, triangle{0, 2, 3}, triangle{4, 0, 3}, triangle{4, 3, 7},
@@ -66,7 +66,7 @@ void run() {
 
   for (size_t i = 0; i < vertices.size(); i++) {
     vertices[i].x -= 1.5;
-    // vertices[i].z += 7;
+    vertices[i].z += 7;
   }
   screen.create_object(vertices, trises);
   while (1) {

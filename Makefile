@@ -1,46 +1,34 @@
-# Compiler flags
+# Переменные
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++17 -O2
-
-# Directories
-SRC_DIR = src
-INC_DIR = include
+CXXFLAGS = -I./include -std=c++17
+LDFLAGS = -lncursesw
+SRC = src/main.cpp src/game.cpp
+OBJ = $(SRC:.cpp=.o)
+OBJ := $(patsubst src/%.o,build/%.o,$(OBJ))
 BUILD_DIR = build
-
-# Binary file
 TARGET = main
 
-# Sources
-SOURCES = $(wildcard $(SRC_DIR)/*.cpp)
-OBJECTS = $(SOURCES:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
+# Цель по умолчанию
+all: $(TARGET)
 
-# Headers
-INCLUDES = -I$(INC_DIR)
-LIBS = -lncursesw -lpanelw
-
-
-# Main rule
-all: $(BUILD_DIR) $(TARGET)
-
-# Build dir
+# Создание директории build, если её нет
 $(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)
 
-# Build target
-$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(LIBS) -o $@ $^
+# Генерация объектных файлов в build/
+build/%.o: src/%.cpp | $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# .cpp to .o
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $(LIBS) -c $< -o $@
+# Сборка финальной программы
+$(TARGET): $(OBJ)
+	$(CXX) $(OBJ) $(LDFLAGS) -o $(TARGET)
 
-# clean
+# Очистка
 clean:
 	rm -rf $(BUILD_DIR) $(TARGET)
 
+# Пересборка
 rebuild: clean all
 
-run: $(TARGET)
-	./$(TARGET)
-
-.PHONY: all clean rebuild run
+# Печать (опционально)
+.PHONY: all clean rebuild
