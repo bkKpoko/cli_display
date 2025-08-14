@@ -34,15 +34,18 @@ public:
   Nvector(int n, const T *a);
   Nvector(const Nvector &rhs);
   Nvector(const std::initializer_list<T> list);
+  Nvector(const std::initializer_list<Nvector<T>> list);
 
   Nvector &operator=(const Nvector &rhs);
   typedef T value_type;
   inline T &operator[](const int i);
   inline const T &operator[](const int i) const;
 
-  inline int size() const;
+  inline size_t size() const;
   void resize(int newn);
   void assign(int newn, const T &a);
+  void pop_back();
+  void print(const int prec = 2) const;
 
   ~Nvector();
 };
@@ -111,6 +114,22 @@ Nvector<T>::Nvector(const std::initializer_list<T> list)
   }
 }
 
+template <class T>
+Nvector<T>::Nvector(const std::initializer_list<Nvector<T>> list) {
+  nn = 0;
+  for (auto el : list) {
+    nn += el.size();
+  }
+  v = nn > 0 ? new T[nn] : NULL;
+  size_t n = 0;
+  for (auto el : list) {
+    for (size_t j = 0; j < el.size(); j++) {
+      v[n + j] = el[j];
+    }
+    n += el.size();
+  }
+}
+
 template <class T> Nvector<T> &Nvector<T>::operator=(const Nvector<T> &rhs) {
   if (this != &rhs) {
     if (nn != rhs.nn) {
@@ -144,7 +163,7 @@ template <class T> inline const T &Nvector<T>::operator[](const int i) const {
   return v[i];
 }
 
-template <class T> inline int Nvector<T>::size() const { return nn; }
+template <class T> inline size_t Nvector<T>::size() const { return nn; }
 
 template <class T> void Nvector<T>::resize(int newn) {
   if (nn != newn) {
@@ -164,6 +183,26 @@ template <class T> void Nvector<T>::assign(int newn, const T &a) {
       for (int i = 0; i < nn; i++)
         v[i] = a;
   }
+}
+
+template <class T> void Nvector<T>::pop_back() {
+#ifdef _CHECKBOUNDS_
+  if (i >= nn || i < 0) {
+    throw std::runtime_error("index out of bounds");
+  }
+#endif // _CHECKBOUNDS_
+  nn--;
+}
+
+template <class T> void Nvector<T>::print(const int prec) const {
+  if (nn > 0) {
+    Nmatrix<T> tmp(1, nn);
+    for (size_t i = 0; i < nn; i++) {
+      tmp[0][i] = v[i];
+    }
+    tmp.print(prec);
+  } else
+    puts("Empty Nvector");
 }
 
 template <class T> Nvector<T>::~Nvector() {
