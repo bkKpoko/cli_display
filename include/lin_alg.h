@@ -2,6 +2,7 @@
 #define _LIN_ALG_H_
 
 // #define _CHECKBOUNDS_ 0
+// #define DEBUG 1
 
 #include <cmath>
 #include <cstddef>
@@ -75,7 +76,7 @@ public:
   void assign(int newn, int newm, const T &a);
 
   void char_elem_matr(Nmatrix<int> &m, const int &n) const;
-  void print(const int prec = 2);
+  void print(const int prec = 2) const;
 
   ~Nmatrix();
 };
@@ -207,20 +208,33 @@ template <class T> Nvector<T>::~Nvector() {
     delete[] (v);
 }
 
-template <class T> Nmatrix<T>::Nmatrix() : nn(0), mm(0), v(NULL) {}
+template <class T> Nmatrix<T>::Nmatrix() : nn(0), mm(0), v(NULL) {
+#ifdef DEBUG
+  puts(__PRETTY_FUNCTION__);
+#endif // DEBUG
+}
 
 template <class T>
 Nmatrix<T>::Nmatrix(int n, int m) : nn(n), mm(m), v(n > 0 ? new T *[n] : NULL) {
+#ifdef DEBUG
+  puts(__PRETTY_FUNCTION__);
+#endif // DEBUG
   int i, nel = m * n;
   if (v)
     v[0] = nel > 0 ? new T[nel] : NULL;
   for (i = 1; i < n; ++i)
     v[i] = v[i - 1] + m;
+#ifdef DEBUG
+  print();
+#endif // DEBUG
 }
 
 template <class T>
 Nmatrix<T>::Nmatrix(int n, int m, const T &a)
     : nn(n), mm(m), v(n > 0 ? new T *[n] : NULL) {
+#ifdef DEBUG
+  puts(__PRETTY_FUNCTION__);
+#endif // DEBUG
   int i, j, nel = m * n;
   if (v)
     v[0] = nel > 0 ? new T[nel] : NULL;
@@ -229,11 +243,17 @@ Nmatrix<T>::Nmatrix(int n, int m, const T &a)
   for (i = 0; i < nn; ++i)
     for (j = 0; j < mm; ++j)
       v[i][j] = a;
+#ifdef DEBUG
+  print();
+#endif // DEBUG
 }
 
 template <class T>
 Nmatrix<T>::Nmatrix(int n, int m, const T *a)
     : nn(n), mm(m), v(n > 0 ? new T *[n] : NULL) {
+#ifdef DEBUG
+  puts(__PRETTY_FUNCTION__);
+#endif // DEBUG
   int i, j, nel = m * n;
   if (v)
     v[0] = nel > 0 ? new T[nel] : NULL;
@@ -242,12 +262,18 @@ Nmatrix<T>::Nmatrix(int n, int m, const T *a)
   for (i = 0; i < nn; ++i)
     for (j = 0; j < mm; ++j)
       v[i][j] = *a++;
+#ifdef DEBUG
+  print();
+#endif // DEBUG
 }
 
 template <class T>
 Nmatrix<T>::Nmatrix(std::initializer_list<std::initializer_list<T>> matrix)
     : nn(matrix.size()), mm(matrix.begin()->size()),
       v(nn > 0 ? new T *[nn] : NULL) {
+#ifdef DEBUG
+  puts(__PRETTY_FUNCTION__);
+#endif // DEBUG
   int i, j, nel = mm * nn;
   if (v)
     v[0] = nel > 0 ? new T[nel] : NULL;
@@ -264,11 +290,17 @@ Nmatrix<T>::Nmatrix(std::initializer_list<std::initializer_list<T>> matrix)
     }
     ++i;
   }
+#ifdef DEBUG
+  print();
+#endif // DEBUG
 }
 
 template <class T>
 Nmatrix<T>::Nmatrix(const Nmatrix &rhs)
     : nn(rhs.nn), mm(rhs.mm), v(nn > 0 ? new T *[nn] : NULL) {
+#ifdef DEBUG
+  puts(__PRETTY_FUNCTION__);
+#endif // DEBUG
   int i, j, nel = nn * mm;
   if (v)
     v[0] = nel > 0 ? new T[nel] : NULL;
@@ -277,14 +309,20 @@ Nmatrix<T>::Nmatrix(const Nmatrix &rhs)
   for (i = 0; i < nn; ++i)
     for (j = 0; j < mm; ++j)
       v[i][j] = rhs[i][j];
+#ifdef DEBUG
+  print();
+#endif // DEBUG
 }
 
 template <class T> Nmatrix<T> &Nmatrix<T>::operator=(const Nmatrix<T> &rhs) {
+#ifdef DEBUG
+  puts(__PRETTY_FUNCTION__);
+#endif // DEBUG
   if (this != &rhs) {
     int i, j, nel;
     if (nn != rhs.nn || mm != rhs.mm) {
       if (v != NULL) {
-        delete[] v[0];
+        delete[] (v[0]);
         delete[] (v);
       }
       nn = rhs.nn;
@@ -293,13 +331,16 @@ template <class T> Nmatrix<T> &Nmatrix<T>::operator=(const Nmatrix<T> &rhs) {
       nel = mm * nn;
       if (v)
         v[0] = nel > 0 ? new T[nel] : NULL;
-      for (i = 1; i < nn; ++i)
+      for (i = 1; i < nn; i++)
         v[i] = v[i - 1] + mm;
     }
-    for (i = 0; i < nn; ++i)
-      for (j = 0; j < mm; ++j)
+    for (i = 0; i < nn; i++)
+      for (j = 0; j < mm; j++)
         v[i][j] = rhs[i][j];
   }
+#ifdef DEBUG
+  print();
+#endif // DEBUG
   return *this;
 }
 
@@ -361,7 +402,7 @@ template <class T> void Nmatrix<T>::assign(int newn, int newm, const T &a) {
       v[i][j] = a;
 }
 
-template <class T> void Nmatrix<T>::print(const int prec) {
+template <class T> void Nmatrix<T>::print(const int prec) const {
   T el;
   bool is_negative;
   int max_size;

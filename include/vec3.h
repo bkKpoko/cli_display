@@ -2,6 +2,7 @@
 #define _VEC3_H_
 
 #include "lin_alg.h"
+#include <cassert>
 #include <stdexcept>
 
 template <class T> class vec3 {
@@ -43,23 +44,25 @@ template <class T> vec3<T>::vec3(const T *a) : data(3, a) {}
 template <class T> vec3<T>::vec3(const vec3 &rhs) : data(rhs.data) {}
 
 template <class T> vec3<T>::vec3(const Nvector<T> &rhs) {
-  if (rhs.size() != 3)
-    throw std::runtime_error("incorrect data size for vec3\n");
+  assert(rhs.size() == 3);
   data = rhs;
 }
 
 template <class T> vec3<T>::vec3(const std::initializer_list<T> list) {
-  if (list.size() != 3)
-    throw std::runtime_error("incorrect data size for vec3\n");
+  assert(list.size() == 3);
   data = Nvector<T>(list);
 }
 
 template <class T> vec3<T> &vec3<T>::operator=(const Nvector<T> &rhs) {
-  return vec3(rhs);
+  assert(rhs.size() == 3);
+  this->data = rhs;
+  return *this;
 }
 
 template <class T> vec3<T> &vec3<T>::operator=(const vec3 &rhs) {
-  return vec3(rhs);
+  if (this != &rhs)
+    this->data = rhs.data;
+  return *this;
 }
 
 template <class T> T &vec3<T>::operator[](const int i) { return data[i]; }
