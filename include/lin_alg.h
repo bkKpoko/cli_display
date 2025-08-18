@@ -2,7 +2,7 @@
 #define _LIN_ALG_H_
 
 // #define _CHECKBOUNDS_ 0
-#define DEBUG 1
+// #define DEBUG 1
 
 #include <cmath>
 #include <cstddef>
@@ -403,27 +403,27 @@ template <class T> void Nmatrix<T>::assign(int newn, int newm, const T &a) {
 }
 
 template <class T> void Nmatrix<T>::print(const int prec) const {
-  // T el;
-  // bool is_negative;
-  // int max_size;
-  // Nmatrix<int> char_sizes;
-  // char_elem_matr(char_sizes, prec);
-  // MAX(char_sizes, max_size);
-  //
-  // std::string s = "";
-  // for (size_t i = 0; i < nn; i++) {
-  //   s += "| ";
-  //   for (size_t j = 0; j < mm; j++) {
-  //     el = v[i][j];
-  //     is_negative = isNEGATIVE(el);
-  //     s += is_negative ? "" : " ";
-  //     s += std::to_string(el).substr(0, char_sizes[i][j] + is_negative) + "
-  //     "; for (size_t t = 0; t < max_size - char_sizes[i][j]; t++)
-  //       s += " ";
-  //   }
-  //   s += " |\n";
-  // }
-  // puts(s.c_str());
+  T el;
+  bool is_negative;
+  int max_size;
+  Nmatrix<int> char_sizes;
+  char_elem_matr(char_sizes, prec);
+  MAX(char_sizes, max_size);
+
+  std::string s = "";
+  for (size_t i = 0; i < nn; i++) {
+    s += "| ";
+    for (size_t j = 0; j < mm; j++) {
+      el = v[i][j];
+      is_negative = isNEGATIVE(el);
+      s += is_negative ? "" : " ";
+      s += std::to_string(el).substr(0, char_sizes[i][j] + is_negative) + " ";
+      for (size_t t = 0; t < max_size - char_sizes[i][j]; t++)
+        s += " ";
+    }
+    s += " |\n";
+  }
+  puts(s.c_str());
 }
 
 template <class T>

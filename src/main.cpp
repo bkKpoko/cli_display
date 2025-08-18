@@ -65,21 +65,28 @@ int init() {
 
 void run() {
   screen &screen = screen::Instance(wnd);
-  int t = 0;
-
-  for (size_t i = 0; i < vertices.size(); i++) {
-    // vertices[i].x() += 2.5;
-    // vertices[i].z() += 8;
-  }
-  model m(vertices, trises);
+  double t = 0;
   int s;
+
+  model m1(vertices, trises);
+  model m2(vertices, trises);
+  m1.pos[2] = 4;
+  m1.pos[0] = -2;
+  m1.scale = 0.5;
+
+  m2.pos[2] = 5;
+  m2.pos[0] = +2;
+  m2.scale = 0.8;
+  // std::cin >> s;
   while (1) {
-    t++;
-    m.pos[0] += 1;
-    screen.create_object(m);
-    // screen.redraw();
+    t += 0.001;
+    m1.rotation = rot_mat(Y, t);
+    m2.rotation = rot_mat(Z, t);
+    screen.clear();
+    screen.create_object(m1);
+    screen.create_object(m2);
+    screen.redraw();
     nanosleep((const struct timespec[]){{0, (int)(1.0 / FPS * 5e7)}}, NULL);
-    std::cin >> s;
   }
 }
 

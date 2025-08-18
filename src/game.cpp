@@ -1,6 +1,7 @@
 #include "game.h"
 #include "lin_alg.h"
 #include "model.h"
+#include <cstdio>
 #include <ncurses.h>
 
 // =========================================
@@ -37,6 +38,17 @@ void screen::init() {
 }
 
 screen::~screen() {}
+
+void screen::clear() {
+  CURSOR_TO_START();
+  for (size_t i = 1; i < LINES - 1; i++) {
+    for (size_t j = 1; j < COLS - 1; j++) {
+      pixels[i][j] = GRAY[0];
+    }
+  }
+  CURSOR_TO_START();
+  refresh();
+}
 
 void screen::redraw() {
   CURSOR_TO_START();
@@ -171,20 +183,22 @@ void screen::create_tr(triangle tr, Nvector<point> points) {
 
 void screen::create_object(Nvector<vertex3d> v, Nvector<triangle> tr) {
   Nvector<point> projected(v.size());
-  for (size_t i = 0; i < v.size(); i++)
+  for (size_t i = 0; i < v.size(); i++) {
     projected[i] = point(v[i]);
+  }
 
-  for (size_t i = 0; i < tr.size(); i++)
+  for (size_t i = 0; i < tr.size(); i++) {
     create_tr(tr[i], projected);
+  }
 }
 
 void screen::create_object(model m) {
   Nvector<vertex3d> trasformed_v = m.vertices;
 
   for (size_t i = 0; i < trasformed_v.size(); i++) {
-    trasformed_v[i] += m.pos;
     trasformed_v[i] *= m.rotation;
     trasformed_v[i] *= m.scale;
+    trasformed_v[i] += m.pos;
   }
 
   create_object(trasformed_v, m.trises);
@@ -203,9 +217,9 @@ point::point() : x(0), y(0), h(0) {}
 point::point(int x, int y, double h) : x(x), y(y), h(h) {}
 
 point::point(vertex3d v) {
-  x = int((COLS - 1) * (0.5 + v.x() * proj_plane_z / v.z()) * font_aspect *
-          aspect * viewport_size);
-  y = int((LINES - 1) * (0.5 + v.y() * proj_plane_z / v.z()) * viewport_size);
+  x = int((COLS) * (0.5 + v.x() * proj_plane_z / v.z() * font_aspect * aspect *
+                              viewport_size));
+  y = int((LINES) * (0.5 + v.y() * proj_plane_z / v.z() * viewport_size));
   h = 1.0;
 }
 

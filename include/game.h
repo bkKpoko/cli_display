@@ -3,6 +3,7 @@
 
 #include "lin_alg.h"
 #include "vec3.h"
+#include <cstdio>
 #include <iterator>
 #include <ncurses.h>
 
@@ -73,6 +74,7 @@ struct screen {
 public:
   static screen &Instance(WINDOW *win);
 
+  void clear();
   void redraw();
   void create_tr(triangle tr, Nvector<point> points);
   void create_line(point p0, point p1, pixel color = GRAY[GRAYSCALE_SIZE - 1]);
