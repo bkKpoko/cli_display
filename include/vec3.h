@@ -14,6 +14,7 @@ public:
   typedef T value_type;
 
   vec3();
+  vec3(const T &x, const T &y, const T &z);
   vec3(const T &a);
   vec3(const T *a);
   vec3(const Nvector<T> &rhs);
@@ -61,6 +62,13 @@ public:
 };
 
 template <class T> vec3<T>::vec3() : data(3, (T)0) {}
+
+template <class T>
+vec3<T>::vec3(const T &x, const T &y, const T &z) : data(3, (T)0) {
+  data[0] = x;
+  data[1] = y;
+  data[2] = z;
+}
 
 template <class T> vec3<T>::vec3(const T &a) : data(3, a) {}
 

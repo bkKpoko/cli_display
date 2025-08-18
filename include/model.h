@@ -14,7 +14,10 @@ public:
   rot_mat rotation;
   vec3<double> scale;
 
+  model();
   model(Nvector<vertex3d> v, Nvector<triangle> tr);
+
+  void import_stl(const char *file_name);
 
   ~model();
 };

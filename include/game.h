@@ -65,7 +65,7 @@ struct point {
 };
 
 typedef struct {
-  size_t v[3];
+  vec3<size_t> v;
 } triangle;
 
 class model;
