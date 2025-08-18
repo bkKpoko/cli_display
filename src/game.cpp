@@ -13,15 +13,13 @@ screen &screen::Instance(WINDOW *win) {
   return s;
 }
 
-screen::screen(WINDOW *win) : wnd_p(win) {
+screen::screen(WINDOW *win)
+    : wnd_p(win), render_w(COLS - 1), render_h(LINES - 1) {
   init();
-  wchar_t x = ' ';
-  cchar_t tmp;
-  setcchar(&tmp, &x, WA_NORMAL, 0, NULL);
-  pixels = Matrix(LINES, COLS, tmp);
+  pixels = Matrix(LINES, COLS, GRAY[0]);
   wborder_set(wnd_p, &vert, &vert, &hor, &hor, &top_left, &top_right, &bot_left,
               &bot_right);
-  // redraw();
+  redraw();
 }
 
 void screen::init() {
@@ -37,26 +35,17 @@ void screen::init() {
   setcchar(&bot_right, &ANGLE_R_B, WA_NORMAL, 0, NULL);
 }
 
-screen::~screen() {}
-
 void screen::clear() {
-  CURSOR_TO_START();
-  for (size_t i = 1; i < LINES - 1; i++) {
-    for (size_t j = 1; j < COLS - 1; j++) {
+  for (size_t i = 1; i < render_h; i++)
+    for (size_t j = 1; j < render_w; j++)
       pixels[i][j] = GRAY[0];
-    }
-  }
-  CURSOR_TO_START();
-  refresh();
 }
 
 void screen::redraw() {
   CURSOR_TO_START();
-  for (size_t i = 1; i < LINES - 1; i++) {
-    for (size_t j = 1; j < COLS - 1; j++) {
+  for (size_t i = 1; i < render_h; i++)
+    for (size_t j = 1; j < render_w; j++)
       mvwadd_wch(wnd_p, i, j, &pixels[i][j]);
-    }
-  }
   CURSOR_TO_START();
   refresh();
 }
@@ -192,7 +181,7 @@ void screen::create_object(Nvector<vertex3d> v, Nvector<triangle> tr) {
   }
 }
 
-void screen::create_object(model m) {
+void screen::create_object(model &m) {
   Nvector<vertex3d> trasformed_v = m.vertices;
 
   for (size_t i = 0; i < trasformed_v.size(); i++) {
@@ -204,6 +193,7 @@ void screen::create_object(model m) {
   create_object(trasformed_v, m.trises);
 }
 
+screen::~screen() {}
 // =========================================
 // struct screen end
 // =========================================

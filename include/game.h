@@ -31,7 +31,7 @@ const wchar_t TR_RIGHT = L'╣';  // 0x2563
 const wchar_t CROSS = L'╬';     // 0x256C
 
 const wchar_t GRAYSCALE[] = L" ·:!/r(l1Z4H9W8$@";
-const int GRAYSCALE_SIZE = std::size(GRAYSCALE) - 2;
+const int GRAYSCALE_SIZE = std::size(GRAYSCALE) - 1;
 
 const int viewport_size = 1;
 const int proj_plane_z = 1;
@@ -84,11 +84,13 @@ public:
                         pixel color = GRAY[GRAYSCALE_SIZE - 1]);
   void create_shaded_tr(point p0, point p1, point p2);
   void create_object(Nvector<vertex3d> v, Nvector<triangle> tr);
-  void create_object(model m);
+  void create_object(model &m);
 
 private:
   WINDOW *wnd_p;
   Matrix pixels;
+
+  int render_w, render_h;
 
   static inline cchar_t vert, hor;
   static inline cchar_t top_left, bot_left;

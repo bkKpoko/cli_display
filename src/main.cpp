@@ -68,11 +68,11 @@ void run() {
   model m2(vertices, trises);
   model m3;
 
-  m3.import_stl("mesh/monke.stl");
-  m3.pos[2] = 4;
-  m3.scale = 0.9;
+  // m3.import_stl("mesh/monke.stl");
+  // m3.pos[2] = 4;
+  // m3.scale = 0.9;
   m1.pos[2] = 4;
-  m1.pos[0] = -2;
+  m1.pos[0] = 0;
   m1.scale = 0.5;
 
   m2.pos[2] = 5;
@@ -80,15 +80,27 @@ void run() {
   m2.scale = 0.8;
 
   double t = 0;
+  wint_t ch;
   while (1) {
+    wget_wch(wnd, &ch);
     t += 2e-3;
-    m1.rotation = rot_mat(Y, t);
-    m2.rotation = rot_mat(Z, t);
-    m3.rotation = rot_mat(Y, t);
     screen.clear();
-    // screen.create_object(m1);
-    // screen.create_object(m2);
-    screen.create_object(m3);
+    m1.rotation = rot_mat(Y, t);
+    switch (ch) {
+    case KEY_UP:
+      m1.pos.z() += 1;
+      break;
+    case KEY_DOWN:
+      m1.pos.z() -= 1;
+      break;
+    case KEY_LEFT:
+      m1.pos.x() -= 1;
+      break;
+    case KEY_RIGHT:
+      m1.pos.x() += 1;
+      break;
+    }
+    screen.create_object(m1);
     screen.redraw();
     nanosleep((const struct timespec[]){{0, (int)(1.0 / FPS * 5e7)}}, NULL);
   }
