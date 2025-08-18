@@ -2,7 +2,7 @@
 CXX = g++
 CXXFLAGS = -I./include -std=c++17
 LDFLAGS = -lncursesw
-SRC = src/main.cpp src/game.cpp
+SRC = src/main.cpp src/game.cpp src/model.cpp src/rot_mat.cpp src/quat.cpp
 OBJ = $(SRC:.cpp=.o)
 OBJ := $(patsubst src/%.o,build/%.o,$(OBJ))
 BUILD_DIR = build

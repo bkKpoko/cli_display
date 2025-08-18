@@ -1,5 +1,6 @@
 #include "game.h"
 #include "lin_alg.h"
+#include "model.h"
 #include <ncurses.h>
 
 // =========================================
@@ -19,7 +20,7 @@ screen::screen(WINDOW *win) : wnd_p(win) {
   pixels = Matrix(LINES, COLS, tmp);
   wborder_set(wnd_p, &vert, &vert, &hor, &hor, &top_left, &top_right, &bot_left,
               &bot_right);
-  redraw();
+  // redraw();
 }
 
 void screen::init() {
@@ -177,6 +178,18 @@ void screen::create_object(Nvector<vertex3d> v, Nvector<triangle> tr) {
     create_tr(tr[i], projected);
 }
 
+void screen::create_object(model m) {
+  Nvector<vertex3d> trasformed_v = m.vertices;
+
+  for (size_t i = 0; i < trasformed_v.size(); i++) {
+    trasformed_v[i] += m.pos;
+    trasformed_v[i] *= m.rotation;
+    trasformed_v[i] *= m.scale;
+  }
+
+  create_object(trasformed_v, m.trises);
+}
+
 // =========================================
 // struct screen end
 // =========================================
@@ -190,9 +203,9 @@ point::point() : x(0), y(0), h(0) {}
 point::point(int x, int y, double h) : x(x), y(y), h(h) {}
 
 point::point(vertex3d v) {
-  x = int((COLS - 1) * (0.5 + v.x * proj_plane_z / v.z) * font_aspect * aspect *
-          viewport_size);
-  y = int((LINES - 1) * (0.5 + v.y * proj_plane_z / v.z) * viewport_size);
+  x = int((COLS - 1) * (0.5 + v.x() * proj_plane_z / v.z()) * font_aspect *
+          aspect * viewport_size);
+  y = int((LINES - 1) * (0.5 + v.y() * proj_plane_z / v.z()) * viewport_size);
   h = 1.0;
 }
 

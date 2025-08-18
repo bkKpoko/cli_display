@@ -1,8 +1,6 @@
 #ifndef _MAT3_H_
 #define _MAT3_H_
 
-// #define DEBUG 1
-
 #include "lin_alg.h"
 #include <cassert>
 #include <cstdio>
@@ -31,7 +29,10 @@ public:
   void set_diag(const T &a);
   void set_eye();
 
+  // transform matrix to inverse
   void Inv();
+  // return inverse matrix
+  mat3 inverse() const;
 
   mat3 operator+(const T &a) const;
   mat3 operator-(const T &a) const;
@@ -62,28 +63,25 @@ template <class T> mat3<T>::mat3() : data(3, 3, 0.0) {
   set_eye();
 #ifdef DEBUG
   puts(__PRETTY_FUNCTION__);
-  data.print();
 #endif // DEBUG
 }
 
 template <class T> mat3<T>::mat3(const T &a) : data(3, 3, a) {
 #ifdef DEBUG
   puts(__PRETTY_FUNCTION__);
-  data.print();
 #endif // DEBUG
 }
 
 template <class T> mat3<T>::mat3(const T *a) : data(3, 3, a) {
 #ifdef DEBUG
   puts(__PRETTY_FUNCTION__);
-  data.print();
 #endif // DEBUG
 }
 
 template <class T> mat3<T>::mat3(const mat3 &rhs) {
 #ifdef DEBUG
   puts(__PRETTY_FUNCTION__);
-  rhs.data.print();
+  puts("fuck");
 #endif // DEBUG
   data = rhs.data;
 }
@@ -91,7 +89,6 @@ template <class T> mat3<T>::mat3(const mat3 &rhs) {
 template <class T> mat3<T>::mat3(const Nmatrix<T> &rhs) {
 #ifdef DEBUG
   puts(__PRETTY_FUNCTION__);
-  rhs.print();
 #endif // DEBUG
   assert(rhs.ncols() == 3 && rhs.nrows() == 3);
   data = rhs;
@@ -106,15 +103,11 @@ mat3<T>::mat3(std::initializer_list<std::initializer_list<T>> matrix) {
   for (auto line : matrix)
     assert(line.size() == 3);
   data = matrix;
-#ifdef DEBUG
-  data.print();
-#endif // DEBUG
 }
 
 template <class T> mat3<T> &mat3<T>::operator=(const mat3 &rhs) {
 #ifdef DEBUG
   puts(__PRETTY_FUNCTION__);
-  rhs.data.print();
 #endif // DEBUG
 
   if (this != &rhs)
@@ -125,7 +118,6 @@ template <class T> mat3<T> &mat3<T>::operator=(const mat3 &rhs) {
 template <class T> mat3<T> &mat3<T>::operator=(const Nmatrix<T> &rhs) {
 #ifdef DEBUG
   puts(__PRETTY_FUNCTION__);
-  rhs.print();
 #endif // DEBUG
   assert(rhs.ncols() == 3 && rhs.nrows() == 3);
   this->data = rhs;
@@ -154,11 +146,11 @@ template <class T> void mat3<T>::set_eye() {
   }
 }
 
-template <class T> void mat3<T>::Inv() {
-  // Вычисляем определитель
+template <class T> mat3<T> mat3<T>::inverse() const {
+  // determinant
   double det = this->operator[](0)[0] *
                    (this->operator[](1)[1] * this->operator[](2)[2] -
-                    this->operator[](2)[1] * this->operator[](1)[1][2]) -
+                    this->operator[](2)[1] * this->operator[](1)[2]) -
                this->operator[](0)[1] *
                    (this->operator[](1)[0] * this->operator[](2)[2] -
                     this->operator[](1)[2] * this->operator[](2)[0]) +
@@ -204,8 +196,10 @@ template <class T> void mat3<T>::Inv() {
                   this->operator[](1)[0] * this->operator[](0)[1]) *
                  invDet;
 
-  *this = result;
+  return result;
 }
+
+template <class T> void mat3<T>::Inv() { *this = this->inverse(); }
 
 template <class T> mat3<T> mat3<T>::operator+(const T &a) const {
   mat3<T> tmp = *this;
@@ -307,7 +301,7 @@ template <class T> mat3<T> mat3<T>::operator*(const mat3<T> &a) const {
 
 template <class T> mat3<T> mat3<T>::operator/(const mat3<T> &a) const {
   mat3<T> tmp = *this;
-  tmp *= a.Inv();
+  tmp *= a.inverse();
   return tmp;
 }
 

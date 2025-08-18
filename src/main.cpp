@@ -1,9 +1,12 @@
 #include "game.h"
 #include "lin_alg.h"
+#include "model.h"
+#include "rot_mat.h"
 #include <algorithm>
 #include <cstdio>
 #include <ctime>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 #include <ncurses.h>
 #include <vector>
@@ -65,30 +68,18 @@ void run() {
   int t = 0;
 
   for (size_t i = 0; i < vertices.size(); i++) {
-    vertices[i].x -= 1.5;
-    vertices[i].z += 7;
+    // vertices[i].x() += 2.5;
+    // vertices[i].z() += 8;
   }
-  screen.create_object(vertices, trises);
+  model m(vertices, trises);
+  int s;
   while (1) {
     t++;
-    for (int i = 1; i < LINES - 1; i++) {
-      for (int j = 1; j < COLS - 1; j++) {
-        // double x = double(j - 1) / (COLS - 1) * 2 - 1;
-        // double y = double(i - 1) / (LINES - 1) * 2 - 1;
-        // x *= aspect * pixel_aspect;
-        // x += sin(t * 1e-3);
-
-        // double dist = std::sqrt(SQR(x) + SQR(y));
-        // int color = int(1. / dist);
-        // color = std::clamp(color, 0, GRAYSCALE_SIZE - 1);
-
-        // p = GRAYSCALE[color];
-        // screen.pixels[i][j] = p;
-        // screen.pixels[i][j].ext_color = color;
-      }
-    }
-    screen.redraw();
+    m.pos[0] += 1;
+    screen.create_object(m);
+    // screen.redraw();
     nanosleep((const struct timespec[]){{0, (int)(1.0 / FPS * 5e7)}}, NULL);
+    std::cin >> s;
   }
 }
 

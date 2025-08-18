@@ -2,6 +2,7 @@
 #define _GAME_H_
 
 #include "lin_alg.h"
+#include "vec3.h"
 #include <iterator>
 #include <ncurses.h>
 
@@ -51,9 +52,7 @@ template <class T> Nvector<T> interpolate(T i0, T d0, T i1, T d1) {
   return v;
 }
 
-typedef struct {
-  double x, y, z;
-} vertex3d;
+using vertex3d = vec3<double>;
 
 struct point {
   int x, y;
@@ -68,6 +67,8 @@ typedef struct {
   size_t v[3];
 } triangle;
 
+class model;
+
 struct screen {
 public:
   static screen &Instance(WINDOW *win);
@@ -81,6 +82,7 @@ public:
                         pixel color = GRAY[GRAYSCALE_SIZE - 1]);
   void create_shaded_tr(point p0, point p1, point p2);
   void create_object(Nvector<vertex3d> v, Nvector<triangle> tr);
+  void create_object(model m);
 
 private:
   WINDOW *wnd_p;
